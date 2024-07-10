@@ -21,9 +21,10 @@ target_sources(${PROJECT_NAME}
     FILE_SET headers TYPE HEADERS BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} FILES "${HEADERS}"
 )
 
-# target_link_libraries(${PROJECT_NAME}
-#     PUBLIC
-# )
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+        gammatech::log
+)
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE

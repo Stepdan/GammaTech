@@ -4,6 +4,8 @@
 
 #include <QObject>
 
+#include "proc/udp_receiver.hpp"
+
 #include "ui/MainWindow.hpp"
 
 namespace gamma {
@@ -16,10 +18,10 @@ public:
     Mediator(const std::shared_ptr<MainWindow>& main_window);
     ~Mediator();
 
-private slots:
-
 private:
     std::shared_ptr<MainWindow> m_main_window;
+
+    std::unique_ptr<proc::UDPReceiver> m_udp_receiver;
 };
 
 }
