@@ -57,5 +57,38 @@ void Scene::wheelEvent(QWheelEvent* event)
 
 void Scene::on_shape_processed(std::shared_ptr<gamma::types::IShape> shape)
 {
-	GAMMA_LOG(L_TRACE, "Scene on_shape_processed: {}", shape);
+	QColor color = QColor(QString::fromStdString(shape->color_str()));
+	switch(shape->type())
+	{
+		case types::IShape::ShapeType::Ellipse:
+		{
+			auto ellipse = std::dynamic_pointer_cast<gamma::types::Ellipse>(shape);
+			m_scene.addEllipse(ellipse->x, ellipse->y, ellipse->r1, ellipse->r2, QPen(color), QBrush(color));
+		}
+		break;
+
+		case types::IShape::ShapeType::Line:
+		{
+			auto line = std::dynamic_pointer_cast<gamma::types::Line>(shape);
+			m_scene.addLine(line->x1, line->y1, line->x2, line->y2, QPen(color));
+		}
+		break;
+
+		case types::IShape::ShapeType::Rect:
+		{
+			auto rect = std::dynamic_pointer_cast<gamma::types::Rect>(shape);
+			m_scene.addRect(rect->x, rect->y, rect->width, rect->height, QPen(color), QBrush(color));
+		}
+		break;
+
+		case types::IShape::ShapeType::Triangle:
+		{
+			auto triangle = std::dynamic_pointer_cast<gamma::types::Triangle>(shape);
+			QPolygonF polygon({ {static_cast<qreal>(triangle->x1), static_cast<qreal>(triangle->y1)}, {static_cast<qreal>(triangle->x2), static_cast<qreal>(triangle->y2)}, {static_cast<qreal>(triangle->x3), static_cast<qreal>(triangle->y3)} });
+			m_scene.addPolygon(polygon, QPen(color), QBrush(color));
+		}
+		break;
+	}
+
+	update();
 }

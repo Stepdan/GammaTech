@@ -15,11 +15,14 @@ public:
     virtual ~IShape() = default;
 
     virtual ShapeType type() const noexcept = 0;
+    virtual std::string color_str() const noexcept = 0;
 };
 
 struct BaseShape : public IShape
 {
     std::string hex_color_str;
+
+    std::string color_str() const noexcept { return hex_color_str; }
 };
 
 struct Rect : public BaseShape

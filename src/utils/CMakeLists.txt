@@ -29,6 +29,7 @@ target_link_libraries(${PROJECT_NAME}
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
+        Qt6::Network
         gammatech::log
 )
 

@@ -10,6 +10,7 @@
 // #include "triangle_generated.h"
 #include "shapes_generated.h"
 
+#include <QColor>
 #include <QNetworkDatagram>
 #include <QUdpSocket>
 
@@ -40,6 +41,9 @@ struct UDPReceiver::Impl
         std::uniform_int_distribution<int> type_rnd(1, 4);
         std::uniform_int_distribution<int> radius_rnd(1, 10);
         std::uniform_int_distribution<int> coord_rnd(-20, 20);
+        std::uniform_int_distribution<int> color_rnd(0, 255);
+
+        QColor color(color_rnd(rng), color_rnd(rng), color_rnd(rng));
 
         auto shape_type = static_cast<types::IShape::ShapeType>(type_rnd(rng));
         switch(shape_type)
@@ -51,6 +55,7 @@ struct UDPReceiver::Impl
                     shape.y = coord_rnd(rng);
                     shape.r1 = radius_rnd(rng);
                     shape.r2 = radius_rnd(rng);
+                    shape.hex_color_str = color.name().toStdString();
                     return std::make_shared<types::Ellipse>(shape);
                 }
                 break;
@@ -61,6 +66,7 @@ struct UDPReceiver::Impl
                     shape.y1 = coord_rnd(rng);
                     shape.x2 = coord_rnd(rng);
                     shape.y2 = coord_rnd(rng);
+                    shape.hex_color_str = color.name().toStdString();
                     return std::make_shared<types::Line>(shape);
                 }
                 break;
@@ -71,6 +77,7 @@ struct UDPReceiver::Impl
                     shape.y = coord_rnd(rng);
                     shape.width = radius_rnd(rng);
                     shape.height = radius_rnd(rng);
+                    shape.hex_color_str = color.name().toStdString();
                     return std::make_shared<types::Rect>(shape);
                 }
                 break;
@@ -83,6 +90,7 @@ struct UDPReceiver::Impl
                     shape.y2 = coord_rnd(rng);
                     shape.x3 = coord_rnd(rng);
                     shape.y3 = coord_rnd(rng);
+                    shape.hex_color_str = color.name().toStdString();
                     return std::make_shared<types::Triangle>(shape);
                 }
                 break;
