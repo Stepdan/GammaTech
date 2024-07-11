@@ -1,0 +1,10 @@
+table EllipseData
+{
+    x:int;
+    y:int;
+    r1:int;
+    r2:int;
+    color_hex:string;
+}
+
+root_type EllipseData;

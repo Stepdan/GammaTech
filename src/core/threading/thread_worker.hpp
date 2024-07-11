@@ -27,12 +27,12 @@ public:
 
 protected:
     virtual void worker_thread() = 0;
-    virtual void thread_worker_stop_impl() {}
 
 protected:
     std::atomic_bool m_is_running{false};
     std::atomic_bool m_need_stop{false};
     std::exception_ptr m_exception_ptr;
+    std::condition_variable m_cond;
 
 private:
     std::thread m_worker;

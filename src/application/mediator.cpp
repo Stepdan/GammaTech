@@ -1,5 +1,7 @@
 #include "mediator.hpp"
 
+#include "core/log/log.hpp"
+
 namespace gamma {
 
 Mediator::Mediator(const std::shared_ptr<MainWindow>& mw)
@@ -10,6 +12,9 @@ Mediator::Mediator(const std::shared_ptr<MainWindow>& mw)
 }
 
 
-Mediator::~Mediator() {}
+Mediator::~Mediator()
+{
+    GAMMA_LOG(L_DEBUG, "Mediator destruction");
+}
 
 }

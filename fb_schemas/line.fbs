@@ -1,0 +1,10 @@
+table LineData
+{
+    x1:int;
+    y1:int;
+    x2:int;
+    y2:int;
+    color_hex:string;
+}
+
+root_type LineData;

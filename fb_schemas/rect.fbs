@@ -1,0 +1,10 @@
+table RectData
+{
+    x:int;
+    y:int;
+    width:int;
+    height:int;
+    color_hex:string;
+}
+
+root_type RectData;

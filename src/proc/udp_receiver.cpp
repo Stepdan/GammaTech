@@ -4,8 +4,15 @@
 
 #include "shapes_generated.h"
 
+// #include "ellipse_generated.h"
+// #include "line_generated.h"
+// #include "rect_generated.h"
+// #include "triangle_generated.h"
+
 #include <QNetworkDatagram>
 #include <QUdpSocket>
+
+#include <random>
 
 namespace gamma::proc {
 
@@ -21,8 +28,67 @@ struct UDPReceiver::Impl
         GAMMA_LOG(L_INFO, "Create and bind UDP Socket: host = {}, port = {}", ip, port);
     }
 
-    std::shared_ptr<types::IShape> parse_data(QNetworkDatagram&& data)
+    std::shared_ptr<types::IShape> parse_data(QNetworkDatagram&& datagram)
     {
+        QByteArray data = datagram.data();
+        
+        //flatbuffers::Verifier verifier(reinterpret_cast<unsigned char*>(data.data()), data.size());
+
+        static std::random_device rd;
+        static std::mt19937 rng{rd()}; 
+        std::uniform_int_distribution<int> type_rnd(1, 4);
+        std::uniform_int_distribution<int> radius_rnd(1, 10);
+        std::uniform_int_distribution<int> coord_rnd(-20, 20);
+
+        auto shape_type = static_cast<types::IShape::ShapeType>(type_rnd(rng));
+        switch(shape_type)
+        {
+            case types::IShape::ShapeType::Ellipse:
+                {
+                    types::Ellipse shape;
+                    shape.x = coord_rnd(rng);
+                    shape.y = coord_rnd(rng);
+                    shape.r1 = radius_rnd(rng);
+                    shape.r2 = radius_rnd(rng);
+                    return std::make_shared<types::Ellipse>(shape);
+                }
+                break;
+            case types::IShape::ShapeType::Line:
+                {
+                    types::Line shape;
+                    shape.x1 = coord_rnd(rng);
+                    shape.y1 = coord_rnd(rng);
+                    shape.x2 = coord_rnd(rng);
+                    shape.y2 = coord_rnd(rng);
+                    return std::make_shared<types::Line>(shape);
+                }
+                break;
+            case types::IShape::ShapeType::Rect:
+                {
+                    types::Rect shape;
+                    shape.x = coord_rnd(rng);
+                    shape.y = coord_rnd(rng);
+                    shape.width = radius_rnd(rng);
+                    shape.height = radius_rnd(rng);
+                    return std::make_shared<types::Rect>(shape);
+                }
+                break;
+            case types::IShape::ShapeType::Triangle:
+                {
+                    types::Triangle shape;
+                    shape.x1 = coord_rnd(rng);
+                    shape.y1 = coord_rnd(rng);
+                    shape.x2 = coord_rnd(rng);
+                    shape.y2 = coord_rnd(rng);
+                    shape.x3 = coord_rnd(rng);
+                    shape.y3 = coord_rnd(rng);
+                    return std::make_shared<types::Triangle>(shape);
+                }
+                break;
+            default:
+                return nullptr;
+        }
+
         return nullptr;
     }
 };
@@ -33,7 +99,9 @@ UDPReceiver::UDPReceiver(const std::string& ip, int port)
     QObject::connect(m_impl->udp_socket.get(), &QUdpSocket::readyRead, this, &UDPReceiver::read_udp_slot);
 }
 
-UDPReceiver::~UDPReceiver() = default;
+UDPReceiver::~UDPReceiver()
+{
+}
 
 void UDPReceiver::worker_thread()
 {
@@ -42,13 +110,10 @@ void UDPReceiver::worker_thread()
         std::shared_ptr<types::IShape> shape;
         {
             std::unique_lock lock(m_guard);
-            m_cond.wait(lock, [this](){ return !m_impl->shape_queue.empty() || m_need_stop; });
+            m_cond.wait(lock, [this](){ return m_need_stop || !m_impl->shape_queue.empty(); });
             
             if(m_need_stop)
-            {
-                GAMMA_LOG(L_INFO, "UDP Receiver has been stopped");
                 break;
-            }
             
             shape = m_impl->shape_queue.front();
             m_impl->shape_queue.pop();
@@ -57,6 +122,10 @@ void UDPReceiver::worker_thread()
         shape_processed(shape);
     }
 
+    if(m_need_stop)
+    {
+        GAMMA_LOG(L_INFO, "UDP Receiver has been forcely stopped");
+    }
 }
 
 void UDPReceiver::read_udp_slot()

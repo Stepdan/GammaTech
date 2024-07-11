@@ -30,7 +30,7 @@ void ThreadWorker::stop_worker()
     GAMMA_LOG(L_TRACE, "Stopping ThreadWorker");
     m_need_stop.store(true);
 
-    thread_worker_stop_impl();
+    m_cond.notify_all();
 
     if (m_worker.joinable())
         m_worker.join();
