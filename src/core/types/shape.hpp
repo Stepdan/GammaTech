@@ -97,3 +97,28 @@ struct fmt::formatter<gamma::types::Triangle> : fmt::formatter<string_view>
         return fmt::format_to(ctx.out(), "(x1: {}; y1: {}; x2: {}; y2: {}; x3: {}; y3: {}; color: {})", shape.x1, shape.y1, shape.x2, shape.y2, shape.x3, shape.y3, shape.hex_color_str);
     }
 };
+
+template <>
+struct fmt::formatter<std::shared_ptr<gamma::types::IShape>> : fmt::formatter<string_view>
+{
+    template <typename FormatContext>
+    auto format(const std::shared_ptr<gamma::types::IShape>& shape, FormatContext& ctx)
+    {
+        if(!shape)
+            return fmt::format_to(ctx.out(), "Null shape");
+
+        switch(shape->type())
+        {
+            case gamma::types::IShape::ShapeType::Ellipse:
+                return fmt::format_to(ctx.out(), "Ellipse {}", *(std::dynamic_pointer_cast<gamma::types::Ellipse>(shape)));
+            case gamma::types::IShape::ShapeType::Line:
+                return fmt::format_to(ctx.out(), "Line {}", *(std::dynamic_pointer_cast<gamma::types::Line>(shape)));
+            case gamma::types::IShape::ShapeType::Rect:
+                return fmt::format_to(ctx.out(), "Rect {}", *(std::dynamic_pointer_cast<gamma::types::Rect>(shape)));
+            case gamma::types::IShape::ShapeType::Triangle:
+                return fmt::format_to(ctx.out(), "Triangle {}", *(std::dynamic_pointer_cast<gamma::types::Triangle>(shape)));
+            default:
+                return fmt::format_to(ctx.out(), "Invalid shape");
+        }
+    }
+};

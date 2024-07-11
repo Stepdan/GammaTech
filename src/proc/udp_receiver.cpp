@@ -2,6 +2,8 @@
 
 #include "core/log/log.hpp"
 
+#include "shapes_generated.h"
+
 #include <QNetworkDatagram>
 #include <QUdpSocket>
 
@@ -43,11 +45,15 @@ void UDPReceiver::worker_thread()
             m_cond.wait(lock, [this](){ return !m_impl->shape_queue.empty() || m_need_stop; });
             
             if(m_need_stop)
+            {
+                GAMMA_LOG(L_INFO, "UDP Receiver has been stopped");
                 break;
+            }
             
             shape = m_impl->shape_queue.front();
             m_impl->shape_queue.pop();
         }
+        GAMMA_LOG(L_DEBUG, "UDP processed shape {}", shape);
         shape_processed(shape);
     }
 
@@ -55,7 +61,7 @@ void UDPReceiver::worker_thread()
 
 void UDPReceiver::read_udp_slot()
 {
-    GAMMA_LOG(L_INFO, "read_udp_slot");
+    GAMMA_LOG(L_DEBUG, "Read UDP Data");
     while (m_impl->udp_socket->hasPendingDatagrams())
     {
         QNetworkDatagram datagram = m_impl->udp_socket->receiveDatagram();

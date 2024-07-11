@@ -110,7 +110,6 @@ class NNToolKitRecipe(ConanFile):
 
         conan_bin_dir = self.build_folder + "/bin"
         for dep in self.dependencies.values():
-            print("{}".format(dep.cpp_info.bindirs[0]))
             copy(self, "*.dll", dep.cpp_info.bindirs[0], conan_bin_dir)
             copy(self, "*.exe", dep.cpp_info.bindirs[0], conan_bin_dir)
             copy(self, "*.lib", dep.cpp_info.libdirs[0], conan_bin_dir)

@@ -19,7 +19,7 @@ foreach(ConanBinFile IN LISTS CONAN_BIN_FILES)
     add_custom_command(
                 TARGET gammatech_app POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ConanBinFile} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}
-                COMMENT "Copying conan bin file: ${ConanBinFile}")
+    )
 endforeach()
 
 if (WIN32)

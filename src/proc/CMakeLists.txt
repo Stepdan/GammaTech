@@ -26,6 +26,7 @@ target_link_libraries(${PROJECT_NAME}
         Qt6::Core
         Qt6::Network
         flatbuffers::flatbuffers
+        fb_generated
         gammatech::threading
 )
 
