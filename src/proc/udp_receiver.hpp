@@ -19,10 +19,10 @@ public:
     ~UDPReceiver();
 
 signals:
-    void shape_processed(std::shared_ptr<types::IShape>);
+    void shape_processed(std::shared_ptr<gamma::types::IShape>);
 
 private slots:
-    void read_udp_slot();
+    void on_read_udp();
 
 private:
     void worker_thread() override;

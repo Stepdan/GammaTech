@@ -1,4 +1,5 @@
 add_subdirectory(core)
+add_subdirectory(utils)
 add_subdirectory(proc)
 add_subdirectory(application)
 add_subdirectory(ui)

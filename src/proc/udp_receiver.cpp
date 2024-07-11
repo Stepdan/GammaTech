@@ -2,12 +2,13 @@
 
 #include "core/log/log.hpp"
 
-#include "shapes_generated.h"
+#include "utils/objects_connector.hpp"
 
 // #include "ellipse_generated.h"
 // #include "line_generated.h"
 // #include "rect_generated.h"
 // #include "triangle_generated.h"
+#include "shapes_generated.h"
 
 #include <QNetworkDatagram>
 #include <QUdpSocket>
@@ -96,7 +97,9 @@ struct UDPReceiver::Impl
 UDPReceiver::UDPReceiver(const std::string& ip, int port)
     : m_impl(std::make_unique<Impl>(ip, port))
 {
-    QObject::connect(m_impl->udp_socket.get(), &QUdpSocket::readyRead, this, &UDPReceiver::read_udp_slot);
+    QObject::connect(m_impl->udp_socket.get(), &QUdpSocket::readyRead, this, &UDPReceiver::on_read_udp);
+
+    utils::ObjectsConnector::register_emitter(utils::ObjectsConnectorID::SHAPE_PROCESSED, this, SIGNAL(shape_processed(std::shared_ptr<gamma::types::IShape>)));
 }
 
 UDPReceiver::~UDPReceiver()
@@ -128,7 +131,7 @@ void UDPReceiver::worker_thread()
     }
 }
 
-void UDPReceiver::read_udp_slot()
+void UDPReceiver::on_read_udp()
 {
     GAMMA_LOG(L_DEBUG, "Read UDP Data");
     while (m_impl->udp_socket->hasPendingDatagrams())

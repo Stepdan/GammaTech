@@ -1,4 +1,4 @@
-project(gammatech_ui)
+project(gammatech_utils)
 
 if(NOT DEFINED HEADERS)
     file(GLOB HEADERS_BASE *.hpp)
@@ -8,7 +8,6 @@ endif()
 if(NOT DEFINED SOURCES)
     file(GLOB SOURCES
         *.cpp
-        *.ui
     )
 endif()
 
@@ -16,7 +15,7 @@ source_group("Headers" FILES ${HEADERS})
 source_group("Sources" FILES ${SOURCES})
 
 add_library(${PROJECT_NAME} STATIC)
-add_library(gammatech::ui ALIAS ${PROJECT_NAME})
+add_library(gammatech::utils ALIAS ${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
     PRIVATE
@@ -27,12 +26,15 @@ target_sources(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        gammatech::utils
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Widgets
+        gammatech::log
 )
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE
-    GAMMATECH_MODULE_NAME="UI"
+    GAMMATECH_MODULE_NAME="UTILS"
     PUBLIC
     BUILD_WITH_EASY_PROFILER
 )
