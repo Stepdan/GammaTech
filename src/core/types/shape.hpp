@@ -16,6 +16,8 @@ public:
 
     virtual ShapeType type() const noexcept = 0;
     virtual std::string color_str() const noexcept = 0;
+    virtual std::pair<int, int> coord() const noexcept = 0;
+    virtual std::pair<int, int> bbox() const noexcept = 0;
 };
 
 struct BaseShape : public IShape
@@ -33,6 +35,8 @@ struct Rect : public BaseShape
     int height;
 
     ShapeType type() const noexcept override { return ShapeType::Rect; };
+    std::pair<int, int> coord() const noexcept override { return {x, y}; }
+    std::pair<int, int> bbox() const noexcept override;
 };
 
 struct Ellipse : public BaseShape
@@ -43,6 +47,8 @@ struct Ellipse : public BaseShape
     int r2;
 
     ShapeType type() const noexcept override { return ShapeType::Ellipse; };
+    std::pair<int, int> coord() const noexcept override { return {x, y}; }
+    std::pair<int, int> bbox() const noexcept override;
 };
 
 struct Triangle : public BaseShape
@@ -50,6 +56,8 @@ struct Triangle : public BaseShape
     int x1, y1, x2, y2, x3, y3;
 
     ShapeType type() const noexcept override { return ShapeType::Triangle; };
+    std::pair<int, int> coord() const noexcept override;
+    std::pair<int, int> bbox() const noexcept override;
 };
 
 struct Line : public BaseShape
@@ -57,6 +65,8 @@ struct Line : public BaseShape
     int x1, y1, x2, y2;
 
     ShapeType type() const noexcept override { return ShapeType::Line; };
+    std::pair<int, int> coord() const noexcept override;
+    std::pair<int, int> bbox() const noexcept override;
 };
 
 }

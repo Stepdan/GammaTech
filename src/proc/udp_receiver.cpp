@@ -4,11 +4,11 @@
 
 #include "utils/objects_connector.hpp"
 
-// #include "ellipse_generated.h"
-// #include "line_generated.h"
-// #include "rect_generated.h"
-// #include "triangle_generated.h"
 #include "shapes_generated.h"
+#include "ellipse_generated.h"
+#include "line_generated.h"
+#include "rect_generated.h"
+#include "triangle_generated.h"
 
 #include <QColor>
 #include <QNetworkDatagram>
@@ -33,72 +33,104 @@ struct UDPReceiver::Impl
     std::shared_ptr<types::IShape> parse_data(QNetworkDatagram&& datagram)
     {
         QByteArray data = datagram.data();
-        
-        //flatbuffers::Verifier verifier(reinterpret_cast<unsigned char*>(data.data()), data.size());
-
-        static std::random_device rd;
-        static std::mt19937 rng{rd()}; 
-        std::uniform_int_distribution<int> type_rnd(1, 4);
-        std::uniform_int_distribution<int> radius_rnd(1, 10);
-        std::uniform_int_distribution<int> coord_rnd(-20, 20);
-        std::uniform_int_distribution<int> color_rnd(0, 255);
-
-        QColor color(color_rnd(rng), color_rnd(rng), color_rnd(rng));
-
-        auto shape_type = static_cast<types::IShape::ShapeType>(type_rnd(rng));
-        switch(shape_type)
+        flatbuffers::Verifier verifier(reinterpret_cast<unsigned char*>(data.data()), data.size());
+        if(!VerifyFigureBuffer(verifier))
         {
-            case types::IShape::ShapeType::Ellipse:
-                {
-                    types::Ellipse shape;
-                    shape.x = coord_rnd(rng);
-                    shape.y = coord_rnd(rng);
-                    shape.r1 = radius_rnd(rng);
-                    shape.r2 = radius_rnd(rng);
-                    shape.hex_color_str = color.name().toStdString();
-                    return std::make_shared<types::Ellipse>(shape);
-                }
-                break;
-            case types::IShape::ShapeType::Line:
-                {
-                    types::Line shape;
-                    shape.x1 = coord_rnd(rng);
-                    shape.y1 = coord_rnd(rng);
-                    shape.x2 = coord_rnd(rng);
-                    shape.y2 = coord_rnd(rng);
-                    shape.hex_color_str = color.name().toStdString();
-                    return std::make_shared<types::Line>(shape);
-                }
-                break;
-            case types::IShape::ShapeType::Rect:
-                {
-                    types::Rect shape;
-                    shape.x = coord_rnd(rng);
-                    shape.y = coord_rnd(rng);
-                    shape.width = radius_rnd(rng);
-                    shape.height = radius_rnd(rng);
-                    shape.hex_color_str = color.name().toStdString();
-                    return std::make_shared<types::Rect>(shape);
-                }
-                break;
-            case types::IShape::ShapeType::Triangle:
-                {
-                    types::Triangle shape;
-                    shape.x1 = coord_rnd(rng);
-                    shape.y1 = coord_rnd(rng);
-                    shape.x2 = coord_rnd(rng);
-                    shape.y2 = coord_rnd(rng);
-                    shape.x3 = coord_rnd(rng);
-                    shape.y3 = coord_rnd(rng);
-                    shape.hex_color_str = color.name().toStdString();
-                    return std::make_shared<types::Triangle>(shape);
-                }
-                break;
-            default:
-                return nullptr;
+            GAMMA_LOG(L_ERROR, "Invalid flatbuffers main data verifing");
+            return nullptr;
         }
 
-        return nullptr;
+        const auto* figure = GetFigure(data.data());
+        
+        auto payload_str = figure->payload()->str();
+        flatbuffers::Verifier payload_verifier(reinterpret_cast<unsigned char*>(payload_str.data()), data.size());
+
+        const auto figure_type = figure->type();
+        switch(figure_type)
+        {
+            case FigureType::FigureType_Rect:
+            {
+                if(!VerifyRectDataBuffer(payload_verifier))
+                {
+                    GAMMA_LOG(L_ERROR, "Invalid Rect verifing");
+                    return nullptr;
+                }
+
+                const auto rect = GetRectData(payload_str.data());
+
+                types::Rect shape;
+                shape.x = rect->x();
+                shape.y = rect->y();
+                shape.width = rect->width();
+                shape.height = rect->height();
+                shape.hex_color_str = rect->color_hex()->str();
+                GAMMA_LOG(L_INFO, "Get Rect from UDP: {}", shape);
+                return std::make_shared<types::Rect>(shape);
+            }
+
+            case FigureType::FigureType_Line:
+            {
+                if(!VerifyLineDataBuffer(payload_verifier))
+                {
+                    GAMMA_LOG(L_ERROR, "Invalid Line verifing");
+                    return nullptr;
+                }
+                const auto line = GetLineData(payload_str.data());
+
+                types::Line shape;
+                shape.x1 = line->x1();
+                shape.y1 = line->y1();
+                shape.x2 = line->x2();
+                shape.y2 = line->y2();
+                shape.hex_color_str = line->color_hex()->str();
+                GAMMA_LOG(L_INFO, "Get Line from UDP: {}", shape);
+                return std::make_shared<types::Line>(shape);
+            }
+
+            case FigureType::FigureType_Ellipse:
+            {
+                if(!VerifyEllipseDataBuffer(payload_verifier))
+                {
+                    GAMMA_LOG(L_ERROR, "Invalid Ellipse verifing");
+                    return nullptr;
+                }
+                const auto ellipse = GetEllipseData(payload_str.data());
+
+                types::Ellipse shape;
+                shape.x = ellipse->x();
+                shape.y = ellipse->y();
+                shape.r1 = ellipse->r1();
+                shape.r2 = ellipse->r2();
+                shape.hex_color_str = ellipse->color_hex()->str();
+                GAMMA_LOG(L_INFO, "Get Ellipse from UDP: {}", shape);
+                return std::make_shared<types::Ellipse>(shape);
+            }
+
+            case FigureType::FigureType_Triangle:
+            {
+                if(!VerifyTriangleDataBuffer(payload_verifier))
+                {
+                    GAMMA_LOG(L_ERROR, "Invalid Triangle verifing");
+                    return nullptr;
+                }
+                const auto triangle = GetTriangleData(payload_str.data());
+
+                types::Triangle shape;
+                shape.x1 = triangle->x1();
+                shape.y1 = triangle->y1();
+                shape.x2 = triangle->x2();
+                shape.y2 = triangle->y2();
+                shape.x3 = triangle->x3();
+                shape.y3 = triangle->y3();
+                shape.hex_color_str = triangle->color_hex()->str();
+                GAMMA_LOG(L_INFO, "Get Triangle from UDP: {}", shape);
+                return std::make_shared<types::Triangle>(shape);
+            }
+
+            default:
+                GAMMA_LOG(L_ERROR, "Invalid FB Figure type");
+                return nullptr;
+        }
     }
 };
 
@@ -141,11 +173,15 @@ void UDPReceiver::worker_thread()
 
 void UDPReceiver::on_read_udp()
 {
-    GAMMA_LOG(L_DEBUG, "Read UDP Data");
     while (m_impl->udp_socket->hasPendingDatagrams())
     {
         QNetworkDatagram datagram = m_impl->udp_socket->receiveDatagram();
         auto shape = m_impl->parse_data(std::move(datagram));
+        if(!shape)
+        {
+            GAMMA_LOG(L_WARN, "Invalid shape parsing, skip");
+            return;
+        }
 
         {
             std::scoped_lock lock(m_guard);

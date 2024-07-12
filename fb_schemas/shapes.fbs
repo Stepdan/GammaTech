@@ -1,39 +1,15 @@
-table RectData
-{
-    x:int;
-    y:int;
-    width:int;
-    height:int;
-    color_hex:string;
+enum FigureType: ushort 
+{ 
+    Rect = 0,
+    Ellipse,
+    Triangle,
+    Line
 }
 
-table EllipseData
+table Figure
 {
-    x:int;
-    y:int;
-    r1:int;
-    r2:int;
-    color_hex:string;
+    type:FigureType;
+    payload:string;
 }
 
-table TriangleData
-{
-    x1:int;
-    y1:int;
-    x2:int;
-    y2:int;
-    x3:int;
-    y3:int;
-    color_hex:string;
-}
-
-table LineData
-{
-    x1:int;
-    y1:int;
-    x2:int;
-    y2:int;
-    color_hex:string;
-}
-
-
+root_type Figure;
