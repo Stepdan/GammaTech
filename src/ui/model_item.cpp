@@ -20,7 +20,7 @@ QString ShapeModelItem::get_data_str(int id) const noexcept
 
 QString ShapeModelItem::get_id_str() const noexcept
 {
-    return QString::number(id);
+    return QString::number(shape->id());
 }
 
 QString ShapeModelItem::get_type_str() const noexcept

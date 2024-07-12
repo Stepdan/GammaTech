@@ -58,7 +58,6 @@ bool ShapeModel::setData(const QModelIndex& index, const QVariant& value, int ro
             case ShapeModelRoles::Item:
             {
                 ShapeModelItem item;
-                item.id = m_counter++;
                 item.shape = value.value<std::shared_ptr<gamma::types::IShape>>();
 
                 this->beginResetModel();
@@ -68,6 +67,8 @@ bool ShapeModel::setData(const QModelIndex& index, const QVariant& value, int ro
             }
         }
     }
+
+    return true;
 }
 
 void ShapeModel::on_shape_processed(std::shared_ptr<gamma::types::IShape> shape)

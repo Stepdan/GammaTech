@@ -8,7 +8,6 @@
 
 struct ShapeModelItem
 {
-    int id;
     std::shared_ptr<gamma::types::IShape> shape;
     bool is_visible{true};
 

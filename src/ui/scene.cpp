@@ -4,6 +4,8 @@
 
 #include "utils/objects_connector.hpp"
 
+#include "declare_metatype.hpp"
+
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QList>
@@ -16,6 +18,8 @@ namespace {
 
 constexpr double SCALE_UP_FACTOR = 1.1;
 constexpr double SCALE_DOWN_FACTOR = 0.9;
+
+constexpr int INVALID_ITEM_ID = -1;
 
 }
 
@@ -31,6 +35,51 @@ Scene::Scene(QWidget* parent)
 Scene::~Scene()
 {
 	GAMMA_LOG(L_TRACE, "Scene destruction");
+}
+
+void Scene::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	QGraphicsView::mouseDoubleClickEvent(event);
+}
+
+void Scene::mousePressEvent(QMouseEvent *event)
+{
+	const auto pos = mapToScene(event->pos());
+	GAMMA_LOG(L_INFO, "pressed to {}, {}", static_cast<int>(pos.x()), static_cast<int>(pos.y()));
+	QGraphicsItem *item = itemAt(static_cast<int>(pos.x()), static_cast<int>(pos.y()));
+
+	auto id = item ? get_graphics_item_id(item) : INVALID_ITEM_ID;
+	GAMMA_LOG(L_TRACE, "Pressed item with id {}", id);
+	if(id == INVALID_ITEM_ID)
+	{
+		QGraphicsView::mousePressEvent(event);
+	}
+
+	const auto btn = event->button();
+	switch(btn)
+	{
+		case Qt::MouseButton::LeftButton:
+		break;
+
+		case Qt::MouseButton::RightButton:
+		break;
+
+		case Qt::MouseButton::MiddleButton:
+		break;
+	}
+
+
+	QGraphicsView::mousePressEvent(event);
+}
+
+void Scene::mouseMoveEvent(QMouseEvent *event)
+{
+	QGraphicsView::mouseMoveEvent(event);
+}
+
+void Scene::mouseReleaseEvent(QMouseEvent *event)
+{
+	QGraphicsView::mouseReleaseEvent(event);
 }
 
 void Scene::wheelEvent(QWheelEvent* event)
@@ -63,21 +112,29 @@ void Scene::on_shape_processed(std::shared_ptr<gamma::types::IShape> shape)
 		case types::IShape::ShapeType::Ellipse:
 		{
 			auto ellipse = std::dynamic_pointer_cast<gamma::types::Ellipse>(shape);
-			m_scene.addEllipse(ellipse->x, ellipse->y, ellipse->r1, ellipse->r2, QPen(color), QBrush(color));
+			SceneEllipseItem* item = new SceneEllipseItem(shape->id(), ellipse->x, ellipse->y, ellipse->r1, ellipse->r2);
+			item->setPen(QPen(color));
+			item->setBrush(QBrush(color));
+			m_scene.addItem(item);
 		}
 		break;
 
 		case types::IShape::ShapeType::Line:
 		{
 			auto line = std::dynamic_pointer_cast<gamma::types::Line>(shape);
-			m_scene.addLine(line->x1, line->y1, line->x2, line->y2, QPen(color));
+			SceneLineItem* item = new SceneLineItem(shape->id(), line->x1, line->y1, line->x2, line->y2);
+			item->setPen(QPen(color));
+			m_scene.addItem(item);
 		}
 		break;
 
 		case types::IShape::ShapeType::Rect:
 		{
 			auto rect = std::dynamic_pointer_cast<gamma::types::Rect>(shape);
-			m_scene.addRect(rect->x, rect->y, rect->width, rect->height, QPen(color), QBrush(color));
+			SceneRectItem* item = new SceneRectItem(shape->id(), rect->x, rect->y, rect->width, rect->height);
+			item->setPen(QPen(color));
+			item->setBrush(QBrush(color));
+			m_scene.addItem(item);
 		}
 		break;
 
@@ -85,10 +142,38 @@ void Scene::on_shape_processed(std::shared_ptr<gamma::types::IShape> shape)
 		{
 			auto triangle = std::dynamic_pointer_cast<gamma::types::Triangle>(shape);
 			QPolygonF polygon({ {static_cast<qreal>(triangle->x1), static_cast<qreal>(triangle->y1)}, {static_cast<qreal>(triangle->x2), static_cast<qreal>(triangle->y2)}, {static_cast<qreal>(triangle->x3), static_cast<qreal>(triangle->y3)} });
-			m_scene.addPolygon(polygon, QPen(color), QBrush(color));
+			ScenePolygonItem* item = new ScenePolygonItem(shape->id(), polygon);
+			item->setPen(QPen(color));
+			item->setBrush(QBrush(color));
+			m_scene.addItem(item);
 		}
 		break;
 	}
 
 	update();
+}
+
+int Scene::get_graphics_item_id(QGraphicsItem* item)
+{
+	if(auto scene_item = qgraphicsitem_cast<SceneEllipseItem*>(item))
+	{
+		return scene_item->get_id();
+	}
+
+	if(auto scene_item = qgraphicsitem_cast<SceneRectItem*>(item))
+	{
+		return scene_item->get_id();
+	}
+
+	if(auto scene_item = qgraphicsitem_cast<SceneLineItem*>(item))
+	{
+		return scene_item->get_id();
+	}
+
+	if(auto scene_item = qgraphicsitem_cast<ScenePolygonItem*>(item))
+	{
+		return scene_item->get_id();
+	}
+
+	return INVALID_ITEM_ID;
 }

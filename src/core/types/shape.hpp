@@ -14,6 +14,7 @@ public:
 public:
     virtual ~IShape() = default;
 
+    virtual int id() const noexcept = 0;
     virtual ShapeType type() const noexcept = 0;
     virtual std::string color_str() const noexcept = 0;
     virtual std::pair<int, int> coord() const noexcept = 0;
@@ -22,8 +23,10 @@ public:
 
 struct BaseShape : public IShape
 {
+    int shape_id{0};
     std::string hex_color_str;
 
+    int id() const noexcept { return shape_id; }
     std::string color_str() const noexcept { return hex_color_str; }
 };
 

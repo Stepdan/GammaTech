@@ -46,6 +46,8 @@ struct UDPReceiver::Impl
         flatbuffers::Verifier payload_verifier(reinterpret_cast<unsigned char*>(payload_str.data()), data.size());
 
         const auto figure_type = figure->type();
+
+        static int counter = 0;
         switch(figure_type)
         {
             case FigureType::FigureType_Rect:
@@ -58,6 +60,7 @@ struct UDPReceiver::Impl
 
                 const auto rect = GetRectData(payload_str.data());
                 types::Rect shape;
+                shape.shape_id = counter++;
                 shape.x = rect->x();
                 shape.y = rect->y();
                 shape.width = rect->width();
@@ -76,6 +79,7 @@ struct UDPReceiver::Impl
 
                 const auto line = GetLineData(payload_str.data());
                 types::Line shape;
+                shape.shape_id = counter++;
                 shape.x1 = line->x1();
                 shape.y1 = line->y1();
                 shape.x2 = line->x2();
@@ -94,6 +98,7 @@ struct UDPReceiver::Impl
 
                 const auto ellipse = GetEllipseData(payload_str.data());
                 types::Ellipse shape;
+                shape.shape_id = counter++;
                 shape.x = ellipse->x();
                 shape.y = ellipse->y();
                 shape.r1 = ellipse->r1();
@@ -112,6 +117,7 @@ struct UDPReceiver::Impl
                 
                 const auto triangle = GetTriangleData(payload_str.data());
                 types::Triangle shape;
+                shape.shape_id = counter++;
                 shape.x1 = triangle->x1();
                 shape.y1 = triangle->y1();
                 shape.x2 = triangle->x2();
