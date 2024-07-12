@@ -2,18 +2,19 @@
 
 #include "core/log/log.hpp"
 
+#include "utils/objects_connector.hpp"
+
 #include "declare_metatype.hpp"
 #include "shape_model_roles.hpp"
+
+using namespace gamma::utils;
 
 ShapeModel::ShapeModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
-    setHeaderData(0, Qt::Orientation::Vertical, QString("ID"));
-    setHeaderData(1, Qt::Orientation::Vertical, QString("Type"));
-    setHeaderData(2, Qt::Orientation::Vertical, QString("Position (X, Y)"));
-    setHeaderData(3, Qt::Orientation::Vertical, QString("Region (Width, Height)"));
-    setHeaderData(4, Qt::Orientation::Vertical, QString("Show/Hide"));
-    setHeaderData(5, Qt::Orientation::Vertical, QString("Delete")); 
+    ObjectsConnector::register_receiver(ObjectsConnectorID::SHAPE_PROCESSED, this, SLOT(on_shape_processed(std::shared_ptr<gamma::types::IShape>)));
+
+    //headerDataChanged(Qt::Horizontal, 0, 5);
 }
 
 int ShapeModel::rowCount(const QModelIndex & /*parent*/) const
@@ -28,9 +29,9 @@ int ShapeModel::columnCount(const QModelIndex & /*parent*/) const
 
 QVariant ShapeModel::data(const QModelIndex &index, int role) const
 {
-    if (index.isValid())
+    if (!index.isValid())
     {
-
+        return QVariant();
     }
 
     const auto r = index.row();
@@ -67,4 +68,35 @@ bool ShapeModel::setData(const QModelIndex& index, const QVariant& value, int ro
             }
         }
     }
+}
+
+void ShapeModel::on_shape_processed(std::shared_ptr<gamma::types::IShape> shape)
+{
+    setData(QModelIndex(), QVariant::fromValue<std::shared_ptr<gamma::types::IShape>>(shape), static_cast<int>(ShapeModelRoles::Item));
+}
+
+QVariant ShapeModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
+{
+    if(role == Qt::DisplayRole)
+    {
+        if(orientation == Qt::Horizontal)
+        {
+            if(section >= 0 && section < columnCount(QModelIndex()))
+            {
+                switch(section)
+                {
+                    case 0: return QString("ID");
+                    case 1: return QString("Type");
+                    case 2: return QString("Position (X, Y)");
+                    case 3: return QString("Region (Width, Height)");
+                    case 4: return QString("Show/Hide");
+                    case 5: return QString("Delete");
+                    default:
+                        return QString();
+                }
+            }
+        }
+    }
+
+    return QAbstractItemModel::headerData(section, orientation, role);
 }

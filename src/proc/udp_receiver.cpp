@@ -57,14 +57,12 @@ struct UDPReceiver::Impl
                 }
 
                 const auto rect = GetRectData(payload_str.data());
-
                 types::Rect shape;
                 shape.x = rect->x();
                 shape.y = rect->y();
                 shape.width = rect->width();
                 shape.height = rect->height();
                 shape.hex_color_str = rect->color_hex()->str();
-                GAMMA_LOG(L_INFO, "Get Rect from UDP: {}", shape);
                 return std::make_shared<types::Rect>(shape);
             }
 
@@ -75,15 +73,14 @@ struct UDPReceiver::Impl
                     GAMMA_LOG(L_ERROR, "Invalid Line verifing");
                     return nullptr;
                 }
-                const auto line = GetLineData(payload_str.data());
 
+                const auto line = GetLineData(payload_str.data());
                 types::Line shape;
                 shape.x1 = line->x1();
                 shape.y1 = line->y1();
                 shape.x2 = line->x2();
                 shape.y2 = line->y2();
                 shape.hex_color_str = line->color_hex()->str();
-                GAMMA_LOG(L_INFO, "Get Line from UDP: {}", shape);
                 return std::make_shared<types::Line>(shape);
             }
 
@@ -94,15 +91,14 @@ struct UDPReceiver::Impl
                     GAMMA_LOG(L_ERROR, "Invalid Ellipse verifing");
                     return nullptr;
                 }
-                const auto ellipse = GetEllipseData(payload_str.data());
 
+                const auto ellipse = GetEllipseData(payload_str.data());
                 types::Ellipse shape;
                 shape.x = ellipse->x();
                 shape.y = ellipse->y();
                 shape.r1 = ellipse->r1();
                 shape.r2 = ellipse->r2();
                 shape.hex_color_str = ellipse->color_hex()->str();
-                GAMMA_LOG(L_INFO, "Get Ellipse from UDP: {}", shape);
                 return std::make_shared<types::Ellipse>(shape);
             }
 
@@ -113,8 +109,8 @@ struct UDPReceiver::Impl
                     GAMMA_LOG(L_ERROR, "Invalid Triangle verifing");
                     return nullptr;
                 }
+                
                 const auto triangle = GetTriangleData(payload_str.data());
-
                 types::Triangle shape;
                 shape.x1 = triangle->x1();
                 shape.y1 = triangle->y1();
@@ -123,7 +119,6 @@ struct UDPReceiver::Impl
                 shape.x3 = triangle->x3();
                 shape.y3 = triangle->y3();
                 shape.hex_color_str = triangle->color_hex()->str();
-                GAMMA_LOG(L_INFO, "Get Triangle from UDP: {}", shape);
                 return std::make_shared<types::Triangle>(shape);
             }
 

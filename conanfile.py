@@ -12,7 +12,8 @@ class NNToolKitRecipe(ConanFile):
         self.requires("fmt/10.2.1")
         self.requires("spdlog/1.14.1")
         self.requires("flatbuffers/24.3.25")
-        self.requires("qt/6.4.2")
+        #self.requires("qt/6.4.2")
+        self.requires("qt/6.7.1")
     
     def layout(self):
         ## define project folder structure

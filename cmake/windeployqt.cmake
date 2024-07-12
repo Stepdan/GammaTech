@@ -17,10 +17,10 @@ function(windeployqt target)
     # - we run windeployqt on target and deploy Qt libs
 
     add_custom_command(TARGET ${target} POST_BUILD
-        COMMAND "${_qt_bin_dir}/windeployqt.exe"
+        COMMAND "${_qt_bin_dir}/windeployqt6.exe"
                 --verbose 1
                 ${windeployqt_build_param}
-                --no-svg
+                #--no-svg
                 --no-opengl
                 --no-opengl-sw
                 --no-compiler-runtime
