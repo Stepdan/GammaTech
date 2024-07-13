@@ -163,7 +163,7 @@ void UDPReceiver::worker_thread()
             m_impl->shape_queue.pop();
         }
         GAMMA_LOG(L_DEBUG, "UDP processed shape {}", shape);
-        shape_processed(shape);
+        emit shape_processed(shape);
     }
 
     if(m_need_stop)

@@ -13,3 +13,5 @@ Q_DECLARE_METATYPE(SceneEllipseItem);
 Q_DECLARE_METATYPE(SceneRectItem);
 Q_DECLARE_METATYPE(SceneLineItem);
 Q_DECLARE_METATYPE(ScenePolygonItem);
+Q_DECLARE_METATYPE(SceneItemActionType);
+Q_DECLARE_METATYPE(SceneItemAction);

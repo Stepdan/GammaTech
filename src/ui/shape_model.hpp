@@ -2,6 +2,8 @@
 
 #include "model_item.hpp"
 
+#include "scene_item_action.hpp"
+
 #include <QAbstractTableModel>
 
 #include <memory>
@@ -26,6 +28,7 @@ private:
 
 private slots:
     void on_shape_processed(std::shared_ptr<gamma::types::IShape>);
+    void on_scene_item_action(SceneItemAction);
 
 private:
     std::vector<ShapeModelItem> m_items;

@@ -10,6 +10,7 @@ public:
     ObjectsConnectorID() = default;
 
     static QString SHAPE_PROCESSED;
+    static QString SCENE_ITEM_ACTION;
 };
 
 }

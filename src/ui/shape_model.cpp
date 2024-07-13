@@ -13,6 +13,7 @@ ShapeModel::ShapeModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
     ObjectsConnector::register_receiver(ObjectsConnectorID::SHAPE_PROCESSED, this, SLOT(on_shape_processed(std::shared_ptr<gamma::types::IShape>)));
+    ObjectsConnector::register_receiver(ObjectsConnectorID::SCENE_ITEM_ACTION, this, SLOT(on_scene_item_action(SceneItemAction)));
 
     //headerDataChanged(Qt::Horizontal, 0, 5);
 }
@@ -65,6 +66,15 @@ bool ShapeModel::setData(const QModelIndex& index, const QVariant& value, int ro
                 this->endResetModel();
                 return true;
             }
+
+            case ShapeModelRoles::Remove:
+            {
+                auto id = value.value<int>();
+                this->beginResetModel();
+                m_items.erase(std::remove_if(m_items.begin(), m_items.end(), [&id](const auto& item) { return id == item.shape->id(); }));
+                this->endResetModel();
+                return true;
+            }
         }
     }
 
@@ -100,4 +110,17 @@ QVariant ShapeModel::headerData(int section, Qt::Orientation orientation, int ro
     }
 
     return QAbstractItemModel::headerData(section, orientation, role);
+}
+
+void ShapeModel::on_scene_item_action(SceneItemAction action)
+{
+    if(action.id == -1)
+        return;
+
+    switch(action.type)
+    {
+        case SceneItemActionType::Removing:
+            setData(QModelIndex(), action.id, static_cast<int>(ShapeModelRoles::Remove));
+            return;
+    }
 }

@@ -2,6 +2,8 @@
 
 #include "core/types/shape.hpp"
 
+#include "scene_item_action.hpp"
+
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
@@ -66,6 +68,9 @@ public:
 	explicit Scene(QWidget *parent = nullptr);
 	~Scene();
 
+signals:
+	void send_scene_item_action(SceneItemAction);
+
 protected:
 	void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -76,9 +81,15 @@ protected:
 private slots:
 	void on_shape_processed(std::shared_ptr<gamma::types::IShape>);
 
+	void on_item_removing(int id);
+
 private:
 	int get_graphics_item_id(QGraphicsItem* item);
 
+	void reset_action();
+
 private:
 	QGraphicsScene m_scene;
+
+	SceneItemAction m_action;
 };
