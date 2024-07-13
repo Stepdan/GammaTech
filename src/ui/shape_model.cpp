@@ -69,11 +69,22 @@ bool ShapeModel::setData(const QModelIndex& index, const QVariant& value, int ro
 
             case ShapeModelRoles::Remove:
             {
-                auto id = value.value<int>();
+                const auto id = value.value<int>();
                 this->beginResetModel();
                 m_items.erase(std::remove_if(m_items.begin(), m_items.end(), [&id](const auto& item) { return id == item.shape->id(); }));
                 this->endResetModel();
                 return true;
+            }
+
+            case ShapeModelRoles::Movement:
+            {
+                const auto action = value.value<SceneItemAction>();
+                if(auto it = std::find_if(m_items.begin(), m_items.end(), [&action](const auto& item) { return action.id == item.shape->id(); }); it != m_items.end())
+                {
+                    this->beginResetModel();
+                    it->shape->move(action.delta_coord.first, action.delta_coord.second);
+                    this->endResetModel();
+                }
             }
         }
     }
@@ -121,6 +132,10 @@ void ShapeModel::on_scene_item_action(SceneItemAction action)
     {
         case SceneItemActionType::Removing:
             setData(QModelIndex(), action.id, static_cast<int>(ShapeModelRoles::Remove));
+            return;
+        
+        case SceneItemActionType::Movement:
+            setData(QModelIndex(), QVariant::fromValue<SceneItemAction>(action), static_cast<int>(ShapeModelRoles::Movement));
             return;
     }
 }

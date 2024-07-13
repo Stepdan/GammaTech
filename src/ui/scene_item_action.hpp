@@ -13,6 +13,7 @@ enum class SceneItemActionType
 struct SceneItemAction
 {
     SceneItemActionType type;
+    std::pair<int, int> initial_pos;
     std::pair<int, int> delta_coord;
     int id;
 };

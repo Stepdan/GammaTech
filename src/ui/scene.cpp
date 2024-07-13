@@ -59,7 +59,15 @@ void Scene::mousePressEvent(QMouseEvent *event)
 	switch(btn)
 	{
 		case Qt::MouseButton::LeftButton:
-		break;
+			{
+				reset_action();
+				m_action.type = SceneItemActionType::Movement;
+				const auto mapped_pos = mapToScene(event->pos());
+				m_action.initial_pos = { static_cast<int>(mapped_pos.x()), static_cast<int>(mapped_pos.y()) };
+				m_action.id = id;
+				emit send_scene_item_action(m_action);
+			}
+			break;
 
 		case Qt::MouseButton::RightButton:
 			{
@@ -87,11 +95,39 @@ void Scene::mousePressEvent(QMouseEvent *event)
 
 void Scene::mouseMoveEvent(QMouseEvent *event)
 {
+	if(m_action.type == SceneItemActionType::Movement)
+	{
+		const auto mapped_pos = mapToScene(event->pos());
+		const std::pair<int, int> cur_pos = { static_cast<int>(mapped_pos.x()), static_cast<int>(mapped_pos.y()) };
+		m_action.delta_coord = { cur_pos.first - m_action.initial_pos.first, cur_pos.second - m_action.initial_pos.second };
+		emit send_scene_item_action(m_action);
+		
+		auto* item = get_item(m_action.id);
+		if(item)
+			get_item(m_action.id)->moveBy(m_action.delta_coord.first, m_action.delta_coord.second);
+
+		m_action.initial_pos = cur_pos;
+	}
+
 	QGraphicsView::mouseMoveEvent(event);
 }
 
 void Scene::mouseReleaseEvent(QMouseEvent *event)
 {
+	if(m_action.type == SceneItemActionType::Movement)
+	{
+		const auto mapped_pos = mapToScene(event->pos());
+		const std::pair<int, int> cur_pos = { static_cast<int>(mapped_pos.x()), static_cast<int>(mapped_pos.y()) };
+		m_action.delta_coord = { cur_pos.first - m_action.initial_pos.first, cur_pos.second - m_action.initial_pos.second };
+		emit send_scene_item_action(m_action);
+		
+		auto* item = get_item(m_action.id);
+		if(item)
+			get_item(m_action.id)->moveBy(m_action.delta_coord.first, m_action.delta_coord.second);
+
+		reset_action();
+	}
+
 	QGraphicsView::mouseReleaseEvent(event);
 }
 
@@ -168,7 +204,7 @@ void Scene::on_shape_processed(std::shared_ptr<gamma::types::IShape> shape)
 
 int Scene::get_graphics_item_id(QGraphicsItem* item)
 {
-	if(auto scene_item = dynamic_cast<SceneItem*>(item))
+	if(auto* scene_item = dynamic_cast<SceneItem*>(item); scene_item)
 	{
 		return scene_item->get_id();
 	}
@@ -179,15 +215,26 @@ int Scene::get_graphics_item_id(QGraphicsItem* item)
 void Scene::reset_action()
 {
 	m_action.type = SceneItemActionType::Undefined;
+	m_action.initial_pos = {0, 0};
 	m_action.delta_coord = {0, 0};
 	m_action.id = INVALID_ITEM_ID;
 }
 
 void Scene::on_item_removing(int id)
 {
+	if(auto* item = get_item(id); item)
+	{
+		m_scene.removeItem(item);
+	}
+}
+
+QGraphicsItem* Scene::get_item(int id)
+{
 	for(auto* item : items())
 	{
 		if(get_graphics_item_id(item) == id)
-			m_scene.removeItem(item);
+			return item;
 	}
+
+	return nullptr;
 }

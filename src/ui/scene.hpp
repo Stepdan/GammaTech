@@ -88,6 +88,8 @@ private:
 
 	void reset_action();
 
+	QGraphicsItem* get_item(int id); 
+
 private:
 	QGraphicsScene m_scene;
 

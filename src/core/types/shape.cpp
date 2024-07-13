@@ -37,4 +37,34 @@ std::pair<int, int> Ellipse::bbox() const noexcept
     return {2*r1, 2*r2};
 }
 
+void Rect::move(int dx, int dy) noexcept
+{
+    x += dx;
+    y += dy;
+}
+
+void Line::move(int dx, int dy) noexcept
+{
+    x1 += dx;
+    y1 += dy;
+    x2 += dx;
+    y2 += dy;
+}
+
+void Ellipse::move(int dx, int dy) noexcept
+{
+    x += dx;
+    y += dy;
+}
+
+void Triangle::move(int dx, int dy) noexcept
+{
+    x1 += dx;
+    y1 += dy;
+    x2 += dx;
+    y2 += dy;
+    x3 += dx;
+    y3 += dy;
+}
+
 }

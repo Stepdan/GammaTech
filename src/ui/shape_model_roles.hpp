@@ -9,4 +9,5 @@ enum class ShapeModelRoles
     Count,
     Remove,
     Visibility,
+    Movement,
 };
