@@ -16,4 +16,5 @@ struct SceneItemAction
     std::pair<int, int> initial_pos;
     std::pair<int, int> delta_coord;
     int id;
+    bool is_visible;
 };

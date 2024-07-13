@@ -12,10 +12,10 @@ using namespace gamma::utils;
 ShapeModel::ShapeModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
+    ObjectsConnector::register_emitter(ObjectsConnectorID::ITEM_VISIBILITY, this, SIGNAL(send_item_visibility_changed(int, bool)));
+
     ObjectsConnector::register_receiver(ObjectsConnectorID::SHAPE_PROCESSED, this, SLOT(on_shape_processed(std::shared_ptr<gamma::types::IShape>)));
     ObjectsConnector::register_receiver(ObjectsConnectorID::SCENE_ITEM_ACTION, this, SLOT(on_scene_item_action(SceneItemAction)));
-
-    //headerDataChanged(Qt::Horizontal, 0, 5);
 }
 
 int ShapeModel::rowCount(const QModelIndex & /*parent*/) const
@@ -85,6 +85,21 @@ bool ShapeModel::setData(const QModelIndex& index, const QVariant& value, int ro
                     it->shape->move(action.delta_coord.first, action.delta_coord.second);
                     this->endResetModel();
                 }
+                return true;
+            }
+
+            case ShapeModelRoles::Visibility:
+            {
+                const auto action = value.value<SceneItemAction>();
+                if(auto it = std::find_if(m_items.begin(), m_items.end(), [&action](const auto& item) { return action.id == item.shape->id(); }); it != m_items.end())
+                {
+                    this->beginResetModel();
+                    it->is_visible = action.is_visible;
+                    this->endResetModel();
+
+                    emit send_item_visibility_changed(action.id, it->is_visible);
+                }
+                return true;
             }
         }
     }
@@ -134,6 +149,10 @@ void ShapeModel::on_scene_item_action(SceneItemAction action)
             setData(QModelIndex(), action.id, static_cast<int>(ShapeModelRoles::Remove));
             return;
         
+        case SceneItemActionType::Visibility:
+            setData(QModelIndex(), QVariant::fromValue<SceneItemAction>(action), static_cast<int>(ShapeModelRoles::Visibility));
+            return;
+
         case SceneItemActionType::Movement:
             setData(QModelIndex(), QVariant::fromValue<SceneItemAction>(action), static_cast<int>(ShapeModelRoles::Movement));
             return;

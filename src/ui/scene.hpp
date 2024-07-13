@@ -82,6 +82,7 @@ private slots:
 	void on_shape_processed(std::shared_ptr<gamma::types::IShape>);
 
 	void on_item_removing(int id);
+	void on_item_visibility_changed(int id, bool visible);
 
 private:
 	int get_graphics_item_id(QGraphicsItem* item);

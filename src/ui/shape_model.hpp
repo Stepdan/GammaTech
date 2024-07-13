@@ -23,6 +23,9 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     
 
+signals:
+    void send_item_visibility_changed(int, bool);
+
 private:
     void reset();
 

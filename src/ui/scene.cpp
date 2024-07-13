@@ -32,6 +32,7 @@ Scene::Scene(QWidget* parent)
 	ObjectsConnector::register_emitter(ObjectsConnectorID::SCENE_ITEM_ACTION, this, SIGNAL(send_scene_item_action(SceneItemAction)));
 	
 	ObjectsConnector::register_receiver(ObjectsConnectorID::SHAPE_PROCESSED, this, SLOT(on_shape_processed(std::shared_ptr<gamma::types::IShape>)));
+	ObjectsConnector::register_receiver(ObjectsConnectorID::ITEM_VISIBILITY, this, SLOT(on_item_visibility_changed(int, bool)));
 }
 
 Scene::~Scene()
@@ -72,9 +73,13 @@ void Scene::mousePressEvent(QMouseEvent *event)
 		case Qt::MouseButton::RightButton:
 			{
 				reset_action();
-				m_action.type = SceneItemActionType::Visibility;
-				m_action.id = id;
-				emit send_scene_item_action(m_action);
+				if(auto* item = get_item(id); item)
+				{
+					m_action.is_visible = !item->isVisible();
+					m_action.type = SceneItemActionType::Visibility;
+					m_action.id = id;
+					emit send_scene_item_action(m_action);
+				}
 			}
 			break;
 
@@ -153,6 +158,35 @@ void Scene::wheelEvent(QWheelEvent* event)
 	update();
 }
 
+int Scene::get_graphics_item_id(QGraphicsItem* item)
+{
+	if(auto* scene_item = dynamic_cast<SceneItem*>(item); scene_item)
+	{
+		return scene_item->get_id();
+	}
+
+	return INVALID_ITEM_ID;
+}
+
+void Scene::reset_action()
+{
+	m_action.type = SceneItemActionType::Undefined;
+	m_action.initial_pos = {0, 0};
+	m_action.delta_coord = {0, 0};
+	m_action.id = INVALID_ITEM_ID;
+}
+
+QGraphicsItem* Scene::get_item(int id)
+{
+	for(auto* item : items())
+	{
+		if(get_graphics_item_id(item) == id)
+			return item;
+	}
+
+	return nullptr;
+}
+
 void Scene::on_shape_processed(std::shared_ptr<gamma::types::IShape> shape)
 {
 	QColor color = QColor(QString::fromStdString(shape->color_str()));
@@ -202,23 +236,6 @@ void Scene::on_shape_processed(std::shared_ptr<gamma::types::IShape> shape)
 	update();
 }
 
-int Scene::get_graphics_item_id(QGraphicsItem* item)
-{
-	if(auto* scene_item = dynamic_cast<SceneItem*>(item); scene_item)
-	{
-		return scene_item->get_id();
-	}
-
-	return INVALID_ITEM_ID;
-}
-
-void Scene::reset_action()
-{
-	m_action.type = SceneItemActionType::Undefined;
-	m_action.initial_pos = {0, 0};
-	m_action.delta_coord = {0, 0};
-	m_action.id = INVALID_ITEM_ID;
-}
 
 void Scene::on_item_removing(int id)
 {
@@ -228,13 +245,10 @@ void Scene::on_item_removing(int id)
 	}
 }
 
-QGraphicsItem* Scene::get_item(int id)
+void Scene::on_item_visibility_changed(int id, bool visible)
 {
-	for(auto* item : items())
+	if(auto* item = get_item(id); item)
 	{
-		if(get_graphics_item_id(item) == id)
-			return item;
-	}
-
-	return nullptr;
+		item->setVisible(visible);
+	}	
 }
