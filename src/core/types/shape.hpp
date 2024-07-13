@@ -53,7 +53,7 @@ struct Ellipse : public BaseShape
     int r2;
 
     ShapeType type() const noexcept override { return ShapeType::Ellipse; };
-    std::pair<int, int> coord() const noexcept override { return {x, y}; }
+    std::pair<int, int> coord() const noexcept override;
     std::pair<int, int> bbox() const noexcept override;
     void move(int dx, int dy) noexcept override;
 };

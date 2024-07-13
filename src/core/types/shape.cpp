@@ -2,14 +2,22 @@
 
 namespace gamma::types {
 
+std::pair<int, int> Ellipse::coord() const noexcept
+{
+    return { x - r1, y - r2 };
+}
+
 std::pair<int, int> Triangle::coord() const noexcept
 {
-    return {(x1 + x2 + x3) / 3, (y1 + y2 + y3) / 3};
+    int x_min = std::min(x1, x2) < x3 ? std::min(x1, x2) : x3;
+    int y_min = std::min(y1, y2) < y3 ? std::min(y1, y2) : y3;
+
+    return {x_min, y_min};
 }
 
 std::pair<int, int> Line::coord() const noexcept
 {
-    return {(x1 + x2) / 2, (y1 + y2) / 2};
+    return { std::min(x1, x2), std::min(y1, y2)};
 }
 
 std::pair<int, int> Rect::bbox() const noexcept
