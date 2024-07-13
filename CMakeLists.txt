@@ -6,6 +6,7 @@ project(gammatech LANGUAGES C CXX)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF) # the flag used to set the language standard (e.g. -std=c++11 rather than -std=gnu++11).

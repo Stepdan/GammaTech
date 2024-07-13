@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>remove_btn.png</file>
+        <file>visibility_disabled.png</file>
+        <file>visibility_enabled.png</file>
+    </qresource>
+</RCC>

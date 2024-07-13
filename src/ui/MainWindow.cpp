@@ -3,8 +3,6 @@
 
 #include "core/log/log.hpp"
 
-#include "ui/shape_model.hpp"
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , m_ui(std::make_unique<Ui::MainWindow>())
@@ -16,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     for(size_t i = 0; i < m_shape_model->columnCount(QModelIndex()); ++i)
         m_ui->tableView->horizontalHeader()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+
+    connect(m_ui->tableView, &QTableView::clicked, m_shape_model, &ShapeModel::on_item_pressed);
 }
 
 MainWindow::~MainWindow()

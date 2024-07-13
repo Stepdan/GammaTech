@@ -15,7 +15,7 @@ class Application : public QApplication
 public:
     Application(int& argc, char** argv);
 
-private:
+    void SetStyle();
 };
 
 #define gamma_app (static_cast<gamma::Application*>(QApplication::instance()))

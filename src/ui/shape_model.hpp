@@ -20,11 +20,14 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-    
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override; 
 
 signals:
     void send_item_visibility_changed(int, bool);
+    void send_item_removing(int);
+
+public slots:
+    void on_item_pressed(const QModelIndex&);
 
 private:
     void reset();

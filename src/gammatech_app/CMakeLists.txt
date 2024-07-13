@@ -14,6 +14,8 @@ target_compile_definitions(gammatech_app
     BUILD_WITH_EASY_PROFILER
 )
 
+qt_add_resources(gammatech_app resources.qrc)
+
 file(GLOB CONAN_BIN_FILES ${CONAN_BIN_DIR}/*.dll)
 foreach(ConanBinFile IN LISTS CONAN_BIN_FILES)
     add_custom_command(

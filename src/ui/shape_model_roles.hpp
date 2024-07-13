@@ -5,9 +5,10 @@
 enum class ShapeModelRoles
 {
     Item = Qt::UserRole,
-    Items,
+    ID,
     Count,
     Remove,
     Visibility,
+    VisibilityByID,
     Movement,
 };

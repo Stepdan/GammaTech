@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ui/shape_model.hpp"
+
 #include <QAbstractTableModel>
 #include <QMainWindow>
 
@@ -23,5 +25,5 @@ public:
 private:
     std::unique_ptr<Ui::MainWindow> m_ui;
 
-    QAbstractTableModel* m_shape_model;
+    ShapeModel* m_shape_model;
 };

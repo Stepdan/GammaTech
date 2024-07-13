@@ -33,6 +33,7 @@ Scene::Scene(QWidget* parent)
 	
 	ObjectsConnector::register_receiver(ObjectsConnectorID::SHAPE_PROCESSED, this, SLOT(on_shape_processed(std::shared_ptr<gamma::types::IShape>)));
 	ObjectsConnector::register_receiver(ObjectsConnectorID::ITEM_VISIBILITY, this, SLOT(on_item_visibility_changed(int, bool)));
+	ObjectsConnector::register_receiver(ObjectsConnectorID::SCENE_ITEM_REMOVING, this, SLOT(on_item_removing(int)));
 }
 
 Scene::~Scene()
@@ -89,7 +90,6 @@ void Scene::mousePressEvent(QMouseEvent *event)
 				m_action.type = SceneItemActionType::Removing;
 				m_action.id = id;
 				emit send_scene_item_action(m_action);
-				on_item_removing(id);
 			}
 			break;
 	}
