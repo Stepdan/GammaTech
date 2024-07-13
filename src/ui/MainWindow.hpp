@@ -22,6 +22,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void on_menu_shapes();
+    void on_menu_table();
+    void on_menu_both();
+
 private:
     std::unique_ptr<Ui::MainWindow> m_ui;
 

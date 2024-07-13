@@ -44,7 +44,7 @@ QVariant ShapeModel::data(const QModelIndex &index, int role) const
         if(m_items.size() < r + 1)
             return QString();
 
-        if(c >= 0 && c <= 3)
+        if(c >= 0 && c <= 5)
             return m_items[r].get_data_str(c);
     }
 

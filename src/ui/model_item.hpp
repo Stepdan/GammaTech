@@ -18,4 +18,5 @@ private:
     QString get_type_str() const noexcept;
     QString get_pos_str() const noexcept;
     QString get_region_str() const noexcept;
+    QString get_visibility_str() const noexcept;
 };

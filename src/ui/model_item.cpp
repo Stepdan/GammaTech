@@ -10,6 +10,8 @@ QString ShapeModelItem::get_data_str(int id) const noexcept
         case 1: return get_type_str();
         case 2: return get_pos_str();
         case 3: return get_region_str();
+        case 4: return get_visibility_str();
+        case 5: return QString("Click to remove");
         default:
         {
             GAMMA_LOG(L_ERROR, "Invalid id for ShapeModelItem");
@@ -59,7 +61,7 @@ QString ShapeModelItem::get_pos_str() const noexcept
 
 QString ShapeModelItem::get_region_str() const noexcept
 {
-     if(!shape)
+    if(!shape)
     {
         GAMMA_LOG(L_ERROR, "Invalid shape in ShapeModelItem");
         return QString("NULL");
@@ -67,4 +69,15 @@ QString ShapeModelItem::get_region_str() const noexcept
 
     const auto [w, h] = shape->bbox();
     return QString::number(w) + QString("px, ") + QString::number(h) + QString("px");
+}
+
+QString ShapeModelItem::get_visibility_str() const noexcept
+{
+    if(!shape)
+    {
+        GAMMA_LOG(L_ERROR, "Invalid shape in ShapeModelItem");
+        return QString("NULL");
+    }
+
+    return is_visible ? QString("Visible") : QString("Hidden");
 }

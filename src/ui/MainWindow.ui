@@ -42,8 +42,33 @@
      <height>33</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Menu</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionShapes"/>
+    <addaction name="actionTable"/>
+    <addaction name="actionBoth"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionShapes">
+   <property name="text">
+    <string>Shapes</string>
+   </property>
+  </action>
+  <action name="actionTable">
+   <property name="text">
+    <string>Table</string>
+   </property>
+  </action>
+  <action name="actionBoth">
+   <property name="text">
+    <string>Both</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

@@ -16,9 +16,31 @@ MainWindow::MainWindow(QWidget *parent)
         m_ui->tableView->horizontalHeader()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 
     connect(m_ui->tableView, &QTableView::clicked, m_shape_model, &ShapeModel::on_item_pressed);
+
+    connect(m_ui->actionShapes, &QAction::triggered, this, &MainWindow::on_menu_shapes);
+    connect(m_ui->actionTable, &QAction::triggered, this, &MainWindow::on_menu_table);
+    connect(m_ui->actionBoth, &QAction::triggered, this, &MainWindow::on_menu_both);
 }
 
 MainWindow::~MainWindow()
 {
     GAMMA_LOG(L_DEBUG, "MainWindow destruction");
+}
+
+void MainWindow::on_menu_shapes()
+{
+    m_ui->tableView->setVisible(false);
+    m_ui->graphicsView->setVisible(true);
+}
+
+void MainWindow::on_menu_table()
+{
+    m_ui->tableView->setVisible(true);
+    m_ui->graphicsView->setVisible(false);
+}
+
+void MainWindow::on_menu_both()
+{
+    m_ui->tableView->setVisible(true);
+    m_ui->graphicsView->setVisible(true);
 }
