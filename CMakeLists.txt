@@ -29,8 +29,8 @@ set(CONAN_PROFILE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/conan/profile_${CMAKE_BUILD_
 
 unset(CONAN_HOST_PROFILE CACHE)
 unset(CONAN_BUILD_PROFILE CACHE)
-set(CONAN_HOST_PROFILE "${CONAN_PROFILE_PATH}" CACHE STRING "Conan host profile from NNToolKit")
-set(CONAN_BUILD_PROFILE "${CONAN_PROFILE_PATH}" CACHE STRING "Conan build profile from NNToolKit")
+set(CONAN_HOST_PROFILE "${CONAN_PROFILE_PATH}" CACHE STRING "Conan host profile from Gammatech")
+set(CONAN_BUILD_PROFILE "${CONAN_PROFILE_PATH}" CACHE STRING "Conan build profile from Gammatech")
 
 set(CONAN_BIN_DIR "${CMAKE_BINARY_DIR}/conan/build/${CMAKE_BUILD_TYPE}/bin")
 
